@@ -1,0 +1,4 @@
+---
+applications:
+- name: chat-example
+  command: node index.js
