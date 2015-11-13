@@ -43,8 +43,14 @@ io.on('connection', function(socket){
 	socket.on('updates', function(msg){
 		console.log('message: ' + msg);
 		messages[messages.length] = msg;
-		connection.query('INSERT INTO messages SET ?', {message: msg});
-		io.emit('updates', msg);
+		connection.query('INSERT INTO messages SET ?', {message: msg}, function(err, result){
+			if(err){
+				console.log('ERROR : ', err);
+			}
+			else {
+				io.emit('updates', result);
+			}
+		});
 	});
 	io.emit('snapshot', messages);
 });

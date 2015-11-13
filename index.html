@@ -29,11 +29,11 @@
       return false;
     });
     socket.on('updates', function(msg){
-      $('#messages').append($('<li>').text(msg));
+      $('#messages').append($('<li>').text(msg.message));
     });
-	
-	
+
 	socket.on('snapshot', function(messages){
+        $('#messages').empty();
 		messages.forEach(function(msg){
 			$('#messages').append($('<li>').text(msg.message));
 		});
