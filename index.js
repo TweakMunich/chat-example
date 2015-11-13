@@ -1,4 +1,5 @@
-var app = require('express')();
+var express = require('express');
+var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var port = process.env.PORT || 3000;
@@ -34,6 +35,8 @@ var messages = [];
 connection.query("SELECT * FROM messages", function(err, rows, fields) {
 	messages = rows;
 });
+
+app.use(express.static('static'));
 
 app.get('/', function(req, res){
   res.sendfile('index.html');
