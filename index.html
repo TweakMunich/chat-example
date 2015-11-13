@@ -16,6 +16,8 @@
   <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
   <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
   <body>
+    <label>User Name</label>
+    <input id="username" type="TEXT"/>
     <ul id="messages"></ul>
     <form action="">
       <input id="m" autocomplete="off" /><button>Send</button>
@@ -23,19 +25,24 @@
   </body>
   <script>
     var socket = io();
+    function printMessage(msg){
+      return msg.date_time + "/" + msg.user_name + " : " + msg.message;
+    }
+
     $('form').submit(function(){
-      socket.emit('updates', $('#m').val());
+      socket.emit('updates', { user_name : $('#username').val(), message : $('#m').val()});
       $('#m').val('');
       return false;
     });
+
     socket.on('updates', function(msg){
-      $('#messages').append($('<li>').text(msg.message));
+      $('#messages').append($('<li>').text(printMessage(msg)));
     });
 
 	socket.on('snapshot', function(messages){
         $('#messages').empty();
 		messages.forEach(function(msg){
-			$('#messages').append($('<li>').text(msg.message));
+			$('#messages').append($('<li>').text(printMessage(msg)));
 		});
     });
   </script>
