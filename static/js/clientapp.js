@@ -8,7 +8,7 @@ chat_example.config(function($routeProvider) {
     $routeProvider
         // route for the home page
         .when('/', {
-            templateUrl : 'main_template.html',
+            templateUrl : 'templates/main_template.html',
             controller  : 'mainController'
         })
 });
