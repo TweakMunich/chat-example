@@ -45,6 +45,19 @@ app.get('/', function(req, res){
   res.sendfile('index.html');
 });
 
+
+app.get('/resetdb', function(req, res){
+	connection.query('DELETE FROM messages', function(err, results){
+		if(err){
+			console.log('ERROR : ', err);
+		}
+		else {
+			console.log('Database is empty again');
+			res.sendfile('index.html');
+		}
+	});
+});
+
 io.on('connection', function(socket){
 	socket.on('updates', function(msg){
 		connection.query('INSERT INTO messages SET ?',  msg, function(err, result){
