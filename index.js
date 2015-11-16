@@ -39,8 +39,6 @@ connection.query("CREATE TABLE IF NOT EXISTS messages (\
 				user_name VARCHAR(255),\
 				PRIMARY KEY (id))");
 
-var snapshot = [];
-
 app.use(express.static('static'));
 
 app.get('/', function(req, res){
@@ -68,9 +66,8 @@ io.on('connection', function(socket){
 	
 	//Loading messages
 	connection.query("SELECT * FROM messages", function(err, rows, fields) {
-		snapshot = rows;
+		io.emit('snapshot', rows);
 	});
-	io.emit('snapshot', snapshot);
 });
 
 http.listen(port, function(){
