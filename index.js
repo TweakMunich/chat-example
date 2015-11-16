@@ -31,10 +31,7 @@ connection.query("CREATE TABLE IF NOT EXISTS messages (\
 				user_name VARCHAR(255),\
 				PRIMARY KEY (id))");
 
-var messages = [];
-connection.query("SELECT * FROM messages", function(err, rows, fields) {
-	messages = rows;
-});
+var snapshot = [];
 
 app.use(express.static('static'));
 
@@ -44,18 +41,28 @@ app.get('/', function(req, res){
 
 io.on('connection', function(socket){
 	socket.on('updates', function(msg){
-		console.log('message: ' + msg);
-		messages[messages.length] = msg;
-		connection.query('INSERT INTO messages SET ?', {message: msg}, function(err, result){
+		connection.query('INSERT INTO messages SET ?',  msg, function(err, result){
 			if(err){
 				console.log('ERROR : ', err);
 			}
 			else {
-				io.emit('updates', result);
+				connection.query('SELECT * FROM messages WHERE id = ?', [result.insertId], function(err, results){
+					if(err){
+						console.log('ERROR : ', err);
+					}
+					else {
+						io.emit('updates', results[0]);
+					}
+				});
 			}
 		});
 	});
-	io.emit('snapshot', messages);
+	
+	//Loading messages
+	connection.query("SELECT * FROM messages", function(err, rows, fields) {
+		snapshot = rows;
+	});
+	io.emit('snapshot', snapshot);
 });
 
 http.listen(port, function(){
