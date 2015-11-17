@@ -16,12 +16,18 @@ chat_example.config(function($routeProvider, $locationProvider) {
 });
 
 // create the controller and inject Angular's $scope
-chat_example.controller('mainController', function($scope) {
+chat_example.controller('mainController', function($scope, $route) {
     $scope.msg = {
         message : "",
         user_name : ""
     }
     var socket = io();
+    socket.on('reconnect', function(){
+        socket.emit('version', $scope.version);
+    });
+    socket.on('disconnect', function(){});
+
+
     function printMessage(msg) {
         console.log(msg);
         return msg.date_time + "/" + msg.user_name + " : " + msg.message;
@@ -32,12 +38,18 @@ chat_example.controller('mainController', function($scope) {
         $scope.$apply();
     });
 
-    socket.on('snapshot', function (messages) {
+    socket.on('snapshot', function (snapshot) {
         $scope.messages = [];
-        messages.forEach(function (msg) {
+        $scope.version = snapshot.version;
+        snapshot.messages.forEach(function (msg) {
             $scope.messages[$scope.messages.length] = printMessage(msg);
         });
+        $scope.version = snapshot.version;
         $scope.$apply();
+    });
+
+    socket.on('refresh', function(){
+        window.location = '/';
     });
 
     $scope.submitMessage = function() {

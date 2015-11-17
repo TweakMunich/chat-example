@@ -1,5 +1,6 @@
 <!-- main template -->
-<label>User Name</label>
+<H1>Chatroom version {{version}}</H1>
+<label>User Name : </label>
 <input ng-model="msg.user_name" type="TEXT"/>
 <ul id="messages">
     <li ng-repeat="msg in messages">{{msg}}</li>

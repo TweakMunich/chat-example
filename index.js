@@ -3,6 +3,8 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var port = process.env.PORT || 3000;
+var version = 1.0;
+
 var credentials =
 {
 	hostname : 'localhost',
@@ -17,7 +19,6 @@ if(process.env.hasOwnProperty('VCAP_SERVICES')){ // running on cloud foundry
 	credentials = vcap_services['p-mysql'][0].credentials;
 }
 
-
 var mysql = require('mysql');
 var connection = mysql.createConnection({
 	host     : credentials.hostname,
@@ -28,9 +29,8 @@ var connection = mysql.createConnection({
 });
 
 connection.connect(function(){
-	console.log("****DB CONNECTED");
+	console.log("DATABASE CONNECTION ESTABLISHED");
 });
-
 
 connection.query("CREATE TABLE IF NOT EXISTS messages (\
 				id INT NOT NULL AUTO_INCREMENT,\
@@ -44,7 +44,6 @@ app.use(express.static('static'));
 app.get('/', function(req, res){
   res.sendfile('index.html');
 });
-
 
 app.get('/resetdb', function(req, res){
 	connection.query('DELETE FROM messages', function(err, results){
@@ -76,13 +75,19 @@ io.on('connection', function(socket){
 			}
 		});
 	});
+
+	socket.on('version', function(versionFromClient){
+		if(versionFromClient != version){
+			io.emit('refresh');
+		}
+	});
 	
 	//Loading messages
 	connection.query("SELECT * FROM messages", function(err, rows, fields) {
-		io.emit('snapshot', rows);
+		io.emit('snapshot', {version : version, messages : rows} );
 	});
 });
 
 http.listen(port, function(){
-  console.log('listening on *:' + port);
+	console.log('HTTP SERVER RUNNING IN VERSION ' + version);
 });
