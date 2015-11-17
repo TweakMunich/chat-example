@@ -1,10 +1,14 @@
 <!-- main template -->
-<H1>Chatroom version {{version}}</H1>
-<label>User Name : </label>
-<input ng-model="msg.user_name" type="TEXT"/>
-<ul id="messages">
+<div style="height: 80px">
+    <h3 align="center">Welcome to CF-chat (Version {{version}})</h3>
+    <label>User name : </label>
+    <input ng-model="msg.user_name"/>
+</div>
+
+<ul class="box content" id="messages">
     <li ng-repeat="msg in messages">{{msg}}</li>
 </ul>
+
 <form action="">
     <input ng-model="msg.message"/>
     <button type="submit" ng-click="submitMessage()">Send</button>

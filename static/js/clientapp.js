@@ -16,11 +16,12 @@ chat_example.config(function($routeProvider, $locationProvider) {
 });
 
 // create the controller and inject Angular's $scope
-chat_example.controller('mainController', function($scope, $route) {
+chat_example.controller('mainController', function($scope, $timeout) {
     $scope.msg = {
         message : "",
         user_name : ""
     }
+
     var socket = io();
     socket.on('reconnect', function(){
         socket.emit('version', $scope.version);
@@ -29,13 +30,22 @@ chat_example.controller('mainController', function($scope, $route) {
 
 
     function printMessage(msg) {
-        console.log(msg);
+        // console.log(msg);
         return msg.date_time + "/" + msg.user_name + " : " + msg.message;
     }
+
+    function updateScroll() {
+        $timeout(function() {
+            var scroller = document.getElementById("messages");
+            scroller.scrollTop = scroller.scrollHeight;
+        }, 0, false);
+    }
+
 
     socket.on('updates', function (msg) {
         $scope.messages[$scope.messages.length] = printMessage(msg);
         $scope.$apply();
+        updateScroll();
     });
 
     socket.on('snapshot', function (snapshot) {
@@ -46,6 +56,7 @@ chat_example.controller('mainController', function($scope, $route) {
         });
         $scope.version = snapshot.version;
         $scope.$apply();
+        updateScroll();
     });
 
     socket.on('refresh', function(){
@@ -53,6 +64,7 @@ chat_example.controller('mainController', function($scope, $route) {
     });
 
     $scope.submitMessage = function() {
+        console.log("SM: " + $scope.msg);
         socket.emit('updates', $scope.msg);
         $scope.msg.message = "";
         $scope.$apply();
