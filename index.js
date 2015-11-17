@@ -28,7 +28,7 @@ var connection = mysql.createConnection({
 });
 
 connection.connect(function(){
-	console.log("****CONNECTION ESTABLISHED 2");
+	console.log("****DB CONNECTED");
 });
 
 
