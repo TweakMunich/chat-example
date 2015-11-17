@@ -1,7 +1,8 @@
 <!-- main template -->
 <label>User Name</label>
-<input id="username" type="TEXT"/>
-<ul id="messages"></ul>
+<input ng-model="msg.user_name" type="TEXT"/>
+<ul ng-repeat="msg in messages">{{msg}}</ul>
 <form action="">
-    <input id="m" autocomplete="off" /><button>Send</button>
+    <input ng-model="msg.message"/>
+    <button type="submit" ng-click="submitMessage()">Send</button>
 </form>

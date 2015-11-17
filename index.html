@@ -54,30 +54,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.18/angular.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.18/angular-route.js"></script>
     <script src="js/clientapp.js"></script>
-    <script>
-        var socket = io();
-        function printMessage(msg) {
-            console.log(msg);
-            return msg.date_time + "/" + msg.user_name + " : " + msg.message;
-        }
-
-        $('form').submit(function () {
-            socket.emit('updates', {user_name: $('#username').val(), message: $('#m').val()});
-            $('#m').val('');
-            return false;
-        });
-
-        socket.on('updates', function (msg) {
-            $('#messages').append($('<li>').text(printMessage(msg)));
-        });
-
-        socket.on('snapshot', function (messages) {
-            $('#messages').empty();
-            messages.forEach(function (msg) {
-                $('#messages').append($('<li>').text(printMessage(msg)));
-            });
-        });
-    </script>
 </head>
 <body ng-controller="mainController">
 <div ng-view></div>
