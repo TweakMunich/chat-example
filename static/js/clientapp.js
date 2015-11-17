@@ -4,13 +4,15 @@
 var chat_example = angular.module('chat_example', ['ngRoute']);
 
 // configure our routes
-chat_example.config(function($routeProvider) {
+chat_example.config(function($routeProvider, $locationProvider) {
     $routeProvider
         // route for the home page
         .when('/', {
             templateUrl : 'templates/main_template.html',
             controller  : 'mainController'
-        })
+        });
+
+    $locationProvider.html5Mode(true);
 });
 
 // create the controller and inject Angular's $scope
