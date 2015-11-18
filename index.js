@@ -2,14 +2,17 @@ var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var port = process.env.PORT || 3000;
+
 var credentials =
 {
-	hostname : "localhost",
-	username : "chat",
-	password : "example"
+	hostname : 'localhost',
+	username : 'chat',
+	password : 'example',
+	name: "chat_example",
+	port : 3306
 }
 
-if(process.env.hasOwnProperty("VCAP_SERVICES")){ // running on cloud foundry
+if(process.env.hasOwnProperty('VCAP_SERVICES')){ // running on cloud foundry
 	var vcap_services = JSON.parse(process.env.VCAP_SERVICES);
 	credentials = vcap_services['p-mysql'][0].credentials;
 }
@@ -18,11 +21,15 @@ var mysql = require('mysql');
 var connection = mysql.createConnection({
 	host     : credentials.hostname,
 	user     : credentials.username,
-	password : credentials.password
+	password : credentials.password,
+	database : credentials.name,
+	port : credentials.port
 });
 
-connection.query("CREATE DATABASE IF NOT EXISTS chat_example");
-connection.query("USE chat_example");
+connection.connect(function(){
+	console.log("DATABASE CONNECTION ESTABLISHED");
+});
+
 connection.query("CREATE TABLE IF NOT EXISTS messages (\
 				id INT NOT NULL AUTO_INCREMENT,\
 				message VARCHAR(255) NOT NULL,\
