@@ -1,4 +1,5 @@
-var app = require('express')();
+var express = require('express');
+var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var port = process.env.PORT || 3000;
@@ -37,29 +38,42 @@ connection.query("CREATE TABLE IF NOT EXISTS messages (\
 				user_name VARCHAR(255),\
 				PRIMARY KEY (id))");
 
-var messages = [];
-connection.query("SELECT * FROM messages", function(err, rows, fields) {
-	messages = rows;
-});
+app.use(express.static('static'));
 
 app.get('/', function(req, res){
   res.sendfile('index.html');
 });
 
+app.get('/resetdb', function(req, res){
+	connection.query('DELETE FROM messages', function(err, results){
+		if(err){
+			console.log('ERROR : ', err);
+		}
+		else {
+			console.log('Database is empty again');
+			res.sendfile('index.html');
+		}
+	});
+});
+
 io.on('connection', function(socket){
 	socket.on('updates', function(msg){
-		console.log('message: ' + msg);
-		messages[messages.length] = msg;
-		connection.query('INSERT INTO messages SET ?', {message: msg}, function(err, result){
+		connection.query('INSERT INTO messages SET ?', {message : msg}, function(err, result){
 			if(err){
 				console.log('ERROR : ', err);
 			}
 			else {
-				io.emit('updates', result);
+				connection.query('SELECT * FROM messages WHERE id = ?', [result.insertId], function(err, results){
+					if(err){
+						console.log('ERROR : ', err);
+					}
+					else {
+						io.emit('updates', results[0]);
+					}
+				});
 			}
 		});
 	});
-	io.emit('snapshot', messages);
 });
 
 http.listen(port, function(){
