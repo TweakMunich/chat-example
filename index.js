@@ -11,7 +11,7 @@ var credentials =
 
 if(process.env.hasOwnProperty("VCAP_SERVICES")){ // running on cloud foundry
 	var vcap_services = JSON.parse(process.env.VCAP_SERVICES);
-	credentials = vcap_services['p_mysql'][0].credentials;
+	credentials = vcap_services['p-mysql'][0].credentials;
 }
 
 var mysql = require('mysql');
