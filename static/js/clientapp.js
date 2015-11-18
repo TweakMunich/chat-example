@@ -34,18 +34,18 @@ chat_example.controller('mainController', function($scope, $timeout) {
         return msg.date_time + "/" + msg.user_name + " : " + msg.message;
     }
 
-    function updateScroll() {
+    $scope.updateScroll = function(){
         $timeout(function() {
             var scroller = document.getElementById("messages");
             scroller.scrollTop = scroller.scrollHeight;
         }, 0, false);
-    }
+    };
 
 
     socket.on('updates', function (msg) {
         $scope.messages[$scope.messages.length] = printMessage(msg);
         $scope.$apply();
-        updateScroll();
+        $scope.updateScroll();
     });
 
     socket.on('snapshot', function (snapshot) {
@@ -56,7 +56,7 @@ chat_example.controller('mainController', function($scope, $timeout) {
         });
         $scope.version = snapshot.version;
         $scope.$apply();
-        updateScroll();
+        $scope.updateScroll();
     });
 
     socket.on('refresh', function(){
@@ -64,9 +64,34 @@ chat_example.controller('mainController', function($scope, $timeout) {
     });
 
     $scope.submitMessage = function() {
-        console.log("SM: " + $scope.msg);
         socket.emit('updates', $scope.msg);
         $scope.msg.message = "";
-        $scope.$apply();
+        //$scope.$apply();
     };
 });
+
+
+chat_example.directive('resize', function ($window) {
+    return function (scope, element) {
+        scope.getWindowDimensions = function () {
+            return {
+                'h': $window.innerHeight,
+                'w': $window.innerWidth
+            };
+        };
+
+        scope.$watch(scope.getWindowDimensions, function (newValue) {
+            scope.style = function () {
+                return {
+                    'height': (newValue.h - 160) + 'px',
+                    'width': (newValue.w) + 'px'
+                };
+            };
+        }, true);
+
+        angular.element($window).bind('resize', function () {
+            scope.$apply();
+            scope.updateScroll();
+        });
+    }
+})
