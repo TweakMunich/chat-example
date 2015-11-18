@@ -1,12 +1,18 @@
 <!-- main template -->
-<div style="height: 80px">
+<div class="header">
     <h3 align="center">Welcome to CF-chat (Version {{version}})</h3>
-    <label>User name : </label>
-    <input ng-model="msg.user_name"/>
+    <div class="input">
+        <label>User name : </label>
+        <input ng-model="msg.user_name"/><br/>
+    </div>
+    <div class="input">
+        <label>Filter : </label>
+        <input ng-model="msgFilter"/>
+    </div>
 </div>
 
-<ul class="box content" id="messages">
-    <li ng-repeat="msg in messages">{{msg}}</li>
+<ul class="box content" id="messages" ng-style="style()" resize>
+    <li ng-repeat="msg in messages | filter:msgFilter">{{msg}}</li>
 </ul>
 
 <form action="">
