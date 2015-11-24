@@ -1,3 +1,5 @@
 ---
 applications:
-- name: chat-example
+- name: chat-demo
+  services:
+  - chat-example-storage
