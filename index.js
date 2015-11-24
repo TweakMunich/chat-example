@@ -74,6 +74,11 @@ io.on('connection', function(socket){
 			}
 		});
 	});
+
+	//Loading messages
+	connection.query("SELECT * FROM messages", function(err, rows, fields) {
+		io.emit('snapshot', rows );
+	});
 });
 
 http.listen(port, function(){
