@@ -1,0 +1,36 @@
+{
+	"id": "/chat-example",
+	"env": {
+		"VCAP_SERVICES": "{ \t\"p-mysql\": [{ \t\t\"credentials\": { \t\t\t\"hostname\": \"marathon-lb.marathon.mesos\", \t\t\t\"port\": 10000, \t\t\t\"name\": \"chat_example_db\", \t\t\t\"username\": \"root\", \t\t\t\"password\": \"xyzzy\" \t\t} \t}] }",
+		"PORT": "8080"
+	},
+	"instances": 1,
+	"cpus": 0.1,
+	"mem": 256,
+	"disk": 0,
+	"container": {
+		"type": "DOCKER",
+		"docker": {
+			"image": "buehlerrobin/chat-example",
+			"network": "BRIDGE",
+			"portMappings": [{
+				"containerPort": 8080,
+				"hostPort": 0,
+				"servicePort": 10001,
+				"protocol": "tcp"
+			}]
+		}
+	},
+	"healthChecks": [{
+		"protocol": "TCP",
+		"portIndex": 0,
+		"gracePeriodSeconds": 300,
+		"intervalSeconds": 60,
+		"timeoutSeconds": 20,
+		"maxConsecutiveFailures": 3,
+		"ignoreHttp1xx": false
+	}],
+	"labels": {
+		"HAPROXY_GROUP": "external"
+	}
+}

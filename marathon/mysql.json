@@ -1,0 +1,34 @@
+{
+	"id": "/mysql",
+	"env": {
+		"MYSQL_ROOT_PASSWORD": "xyzzy"
+	},
+	"instances": 1,
+	"cpus": 0.1,
+	"mem": 256,
+	"container": {
+		"type": "DOCKER",
+		"docker": {
+			"image": "mysql:5.7",
+			"network": "BRIDGE",
+			"portMappings": [{
+				"containerPort": 3306,
+				"hostPort": 0,
+				"servicePort": 10000,
+				"protocol": "tcp"
+			}]
+		}
+	},
+	"healthChecks": [{
+		"protocol": "TCP",
+		"portIndex": 0,
+		"gracePeriodSeconds": 300,
+		"intervalSeconds": 60,
+		"timeoutSeconds": 20,
+		"maxConsecutiveFailures": 3,
+		"ignoreHttp1xx": false
+	}],
+	"labels": {
+		"HAPROXY_GROUP": "external"
+	}
+}
